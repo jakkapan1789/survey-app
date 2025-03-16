@@ -266,7 +266,9 @@ const FormPreview = ({ form, onAnswerChange, answers = {} }) => {
       <Stack direction={"column"} spacing={1}>
         {form.questions.map((question, index) => {
           return (
-            <Stack direction={"row"}>{renderQuestion(question, index)}</Stack>
+            <Stack key={index} direction={"row"}>
+              {renderQuestion(question, index)}
+            </Stack>
           );
         })}
       </Stack>

@@ -1,4 +1,3 @@
-// components/Dashboard.js หรือ app/dashboard/page.js (ขึ้นกับโครงสร้างโปรเจค)
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
@@ -84,7 +83,6 @@ const Dashboard = () => {
             sx={{
               bgcolor: "white",
               borderRadius: 2,
-              //   boxShadow: 1,
               p: 2,
               mb: 3,
             }}
