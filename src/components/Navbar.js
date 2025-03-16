@@ -44,7 +44,6 @@ const Navbar = () => {
               sx={{
                 color: "#003092",
                 borderColor: "#003092",
-                display: { xs: "none" },
               }}
               onClick={() => router.push("/dashboard")}
             >
@@ -54,7 +53,7 @@ const Navbar = () => {
               variant="contained"
               onClick={handleCreateForm}
               startIcon={<Add />}
-              sx={{ bgcolor: "#003092" }}
+              sx={{ bgcolor: "#003092", display: { xs: "none" } }}
             >
               สร้างแบบสอบถาม
             </Button>
