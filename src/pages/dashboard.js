@@ -114,7 +114,7 @@ const Dashboard = () => {
               {searchQuery ? (
                 <>
                   <Typography sx={{ color: "grey.500", mb: 2 }}>
-                    ไม่พบแบบฟอร์มที่ตรงกัน "{searchQuery}"
+                    ไม่พบแบบฟอร์มที่ตรงกัน ({searchQuery})
                   </Typography>
                   <Button variant="outlined" onClick={() => setSearchQuery("")}>
                     ล้างการค้นหา
@@ -129,7 +129,6 @@ const Dashboard = () => {
                     variant="contained"
                     onClick={handleCreateForm}
                     startIcon={<PlusIcon />}
-                    // sx={{ bgcolor: "#8F4426" }}
                   >
                     สร้างแบบฟอร์ม
                   </Button>

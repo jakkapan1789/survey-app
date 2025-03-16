@@ -144,8 +144,6 @@ const FormCard = ({ form }) => {
                 คัลลอกลิ้งก์
               </MenuItem>
               <MenuItem
-                // component={Link}
-                // href={`/responses?formId=${form.id}`}
                 onClick={() => {
                   handleMenuClose();
                   router.push(`/responses?formId=${form.id}`);
@@ -199,7 +197,7 @@ const FormCard = ({ form }) => {
         <DialogTitle>คุณแน่ใจมั้ย?</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            การดำเนินการนี้จะลบฟอร์ม "{form.title}" และไม่สามารถย้อนกลับได้
+            การดำเนินการนี้จะลบฟอร์ม ({form.title}) และไม่สามารถย้อนกลับได้
             ข้อมูลการตอบกลับทั้งหมดจะถูกลบเช่นกัน
           </DialogContentText>
         </DialogContent>
