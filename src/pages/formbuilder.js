@@ -125,6 +125,8 @@ const FormBuilder = () => {
           display: "flex",
           flexDirection: "column",
         }}
+        data-aos="fade-up"
+        data-aos-duration="700"
       >
         <Container maxWidth="lg">
           <Grid container justifyContent="center">

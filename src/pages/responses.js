@@ -165,7 +165,12 @@ const FormResponses = () => {
       }}
     >
       <Navbar />
-      <Box component="main" sx={{ flex: 1, py: 4, px: 2, mt: 8 }}>
+      <Box
+        component="main"
+        sx={{ flex: 1, py: 4, px: 2, mt: 8 }}
+        data-aos="fade-up"
+        data-aos-duration="700"
+      >
         <Container maxWidth="lg">
           <Grid container justifyContent="center">
             <Grid item xs={12} sm={12}>

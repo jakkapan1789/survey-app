@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFormContext } from "@/context/FormContext";
 import FormPreview from "@/components/FormPreview";
-import { Box, Button, Card, Typography } from "@mui/material";
+import { Box, Button, Card, Container, Grid, Typography } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { evaluateCondition } from "@/lib/utils";
 
@@ -157,18 +157,31 @@ const FormView = () => {
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "grey.50", py: 4, px: 2 }}>
       {/* <Box sx={{ maxWidth: "48rem", mx: "auto" }}> */}
-      <Box>
-        <FormPreview
-          form={form}
-          onAnswerChange={handleAnswerChange}
-          answers={answers}
-        />
-        <Box sx={{ mt: 4, mb: 8, display: "flex", justifyContent: "center" }}>
-          <Button variant="contained" size="large" onClick={handleSubmit}>
-            ส่งการตอบกลับ
-          </Button>
-        </Box>
-      </Box>
+      <Container maxWidth="lg">
+        <Grid container>
+          <Grid item xs={12} md={12}>
+            <Box data-aos="fade-up" data-aos-duration="700">
+              <FormPreview
+                form={form}
+                onAnswerChange={handleAnswerChange}
+                answers={answers}
+              />
+              <Box
+                sx={{ mt: 4, mb: 8, display: "flex", justifyContent: "center" }}
+              >
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={handleSubmit}
+                  sx={{ bgcolor: "#003092" }}
+                >
+                  ส่งการตอบกลับ
+                </Button>
+              </Box>
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
     </Box>
   );
 };

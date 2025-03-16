@@ -44,7 +44,12 @@ const Dashboard = () => {
     >
       <Navbar />
 
-      <Box component="main" sx={{ flex: 1, py: 4, mt: 8 }}>
+      <Box
+        component="main"
+        sx={{ flex: 1, py: 4, mt: 8 }}
+        data-aos="fade-up"
+        data-aos-duration="700"
+      >
         <Container maxWidth="lg">
           <Box
             sx={{
