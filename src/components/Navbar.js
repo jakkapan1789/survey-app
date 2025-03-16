@@ -41,7 +41,11 @@ const Navbar = () => {
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Button
               variant="outlined"
-              sx={{ color: "#003092", borderColor: "#003092" }}
+              sx={{
+                color: "#003092",
+                borderColor: "#003092",
+                display: { xs: "none" },
+              }}
               onClick={() => router.push("/dashboard")}
             >
               แดชบอร์ด

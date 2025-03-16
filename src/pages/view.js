@@ -156,7 +156,8 @@ const FormView = () => {
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "grey.50", py: 4, px: 2 }}>
-      <Box sx={{ maxWidth: "48rem", mx: "auto" }}>
+      {/* <Box sx={{ maxWidth: "48rem", mx: "auto" }}> */}
+      <Box>
         <FormPreview
           form={form}
           onAnswerChange={handleAnswerChange}

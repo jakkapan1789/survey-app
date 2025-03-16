@@ -44,7 +44,7 @@ const Dashboard = () => {
     >
       <Navbar />
 
-      <Box component="main" sx={{ flex: 1, py: 4, px: 2, mt: 8 }}>
+      <Box component="main" sx={{ flex: 1, py: 4, mt: 8 }}>
         <Container maxWidth="lg">
           <Box
             sx={{

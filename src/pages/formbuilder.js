@@ -124,7 +124,6 @@ const FormBuilder = () => {
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
-          px: { xs: 2, md: 0 },
         }}
       >
         <Container maxWidth="lg">
@@ -134,7 +133,6 @@ const FormBuilder = () => {
                 sx={{
                   bgcolor: "white",
                   border: "none",
-                  px: { xs: 2, md: 3 },
                   pt: 3,
                 }}
               >
@@ -180,7 +178,6 @@ const FormBuilder = () => {
                         variant="contained"
                         onClick={handlePublish}
                         startIcon={<LinkIcon />}
-                        // sx={{ bgcolor: "#003092" }}
                         sx={{
                           bgcolor: form.published ? "#D84040" : " #003092",
                         }}
@@ -192,7 +189,7 @@ const FormBuilder = () => {
                 </Box>
               </Box>
 
-              <Box sx={{ maxWidth: "100%", px: { xs: 2, md: 3 }, py: 1 }}>
+              <Box sx={{ maxWidth: "100%", py: 1 }}>
                 <Tabs
                   value={activeTab}
                   onChange={(e, newValue) => setActiveTab(newValue)}
