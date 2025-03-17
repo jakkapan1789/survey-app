@@ -17,6 +17,7 @@
     "@mui/styled-engine-sc": "^6.4.6",
     "aos": "^2.3.4",
     "next": "15.2.2",
+    "pg": "^8.14.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "styled-components": "^6.1.15"

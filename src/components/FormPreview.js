@@ -29,10 +29,10 @@ const FormPreview = ({ form, onAnswerChange, answers = {} }) => {
       const visible = [];
 
       form.questions.forEach((question) => {
-        if (!question.conditionalLogic) {
+        if (!question.conditional_logic) {
           visible.push(question.id);
         } else {
-          const { questionId, operator, value } = question.conditionalLogic;
+          const { questionId, operator, value } = question.conditional_logic;
           const parentAnswer = answers[questionId];
 
           if (parentAnswer) {

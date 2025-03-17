@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFormContext } from "@/context/FormContext";
-import Navbar from "@/components/Navbar";
 import { formatDate } from "@/lib/utils";
 import {
   Box,
@@ -25,6 +24,7 @@ import {
   Download as DownloadIcon,
 } from "@mui/icons-material";
 import Link from "next/link";
+import AppLayout from "@/components/Layout";
 
 const FormResponses = () => {
   const searchParams = useSearchParams();
@@ -37,16 +37,27 @@ const FormResponses = () => {
   const [viewingResponse, setViewingResponse] = useState(null);
 
   useEffect(() => {
-    if (formId) {
-      const existingForm = getForm(formId);
-      if (existingForm) {
-        setForm(existingForm);
-        setResponses(getFormResponses(formId));
-      } else {
+    const fetchFormData = async () => {
+      if (!formId) return;
+
+      try {
+        const existingForm = await getForm(formId); // Wait for form data
+        if (existingForm) {
+          setForm(existingForm);
+          const responses = await getFormResponses(formId); // Wait for responses
+          console.log("responses", responses);
+          setResponses(responses);
+        } else {
+          router.push("/dashboard");
+        }
+      } catch (error) {
+        console.error("Error fetching form data:", error);
         router.push("/dashboard");
       }
-    }
-  }, [formId, getForm, getFormResponses, router]);
+    };
+
+    fetchFormData();
+  }, [formId, router]);
 
   if (!form) {
     return <Box>Loading...</Box>;
@@ -156,172 +167,176 @@ const FormResponses = () => {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        bgcolor: "grey.50",
-      }}
-    >
-      <Navbar />
+    <AppLayout>
       <Box
-        component="main"
-        sx={{ flex: 1, py: 4, px: 2, mt: 8 }}
-        data-aos="fade-up"
-        data-aos-duration="700"
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          bgcolor: "grey.50",
+        }}
       >
-        <Container maxWidth="lg">
-          <Grid container justifyContent="center">
-            <Grid item xs={12} sm={12}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mb: 3,
-                }}
-              >
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <Button
-                    variant="text"
-                    onClick={() => router.back()}
-                    startIcon={<ArrowLeftIcon />}
-                    sx={{ mr: 1, color: "black" }}
-                  >
-                    ย้อนกลับ
-                  </Button>
-                </Box>
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <Link
-                    href={`/form?formId=${form.id}`}
-                    target="_blank"
-                    passHref
-                  >
+        <Box
+          component="main"
+          sx={{ flex: 1, py: 4, px: 2, mt: 8 }}
+          data-aos="fade-up"
+          data-aos-duration="700"
+        >
+          <Container maxWidth="lg">
+            <Grid container justifyContent="center">
+              <Grid item xs={12} sm={12}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 3,
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Button
+                      variant="text"
+                      onClick={() => router.back()}
+                      startIcon={<ArrowLeftIcon />}
+                      sx={{ mr: 1, color: "black" }}
+                    >
+                      ย้อนกลับ
+                    </Button>
+                  </Box>
+                  <Box sx={{ display: "flex", gap: 1 }}>
                     <Button
                       variant="outlined"
                       sx={{ color: "#003092", borderColor: "#003092" }}
                       startIcon={<EyeIcon />}
+                      onClick={() =>
+                        router.push(`/formbuilder?formId=${formId}`)
+                      }
                     >
                       ดูแบบฟอร์ม
                     </Button>
-                  </Link>
-                  <Button
-                    variant="contained"
-                    // onClick={exportToCsv}
-                    disabled={responses.length === 0}
-                    startIcon={<DownloadIcon />}
-                    sx={{ bgcolor: "#003092" }}
-                  >
-                    ดาวน์โหลด CSV
-                  </Button>
+                    <Button
+                      variant="contained"
+                      onClick={exportToCsv}
+                      disabled={responses.length === 0}
+                      startIcon={<DownloadIcon />}
+                      sx={{ bgcolor: "#003092" }}
+                    >
+                      ดาวน์โหลด CSV
+                    </Button>
+                  </Box>
                 </Box>
-              </Box>
-              <Typography sx={{ color: "grey.600", mb: 3 }}>
-                {form.title} - {responses.length} การตอบกลับ
-              </Typography>
+                <Typography sx={{ color: "grey.600", mb: 3 }}>
+                  {form.title} - {responses.length} การตอบกลับ
+                </Typography>
 
-              {viewingResponse ? (
-                renderResponseDetails(viewingResponse)
-              ) : (
-                <Card>
-                  <CardContent sx={{ p: 0 }}>
-                    {responses.length === 0 ? (
-                      <Box sx={{ py: 8, textAlign: "center" }}>
-                        <Typography sx={{ color: "grey.500", mb: 2 }}>
-                          ยังไม่มีการตอบกลับสำหรับแบบฟอร์มนี้
-                        </Typography>
-                        <Typography
-                          sx={{ color: "grey.400", fontSize: "0.875rem" }}
-                        >
-                          คำตอบจะปรากฏที่นี่เมื่อมีคนส่งแบบฟอร์ม
-                        </Typography>
-                      </Box>
-                    ) : (
-                      <TableContainer>
-                        <Table>
-                          <TableHead>
-                            <TableRow>
-                              <TableCell
-                                sx={{ width: 180, fontWeight: "bold" }}
-                              >
-                                ระยะเวลาการส่ง
-                              </TableCell>
-                              {form.questions.slice(0, 3).map((question) => (
+                {viewingResponse ? (
+                  renderResponseDetails(viewingResponse)
+                ) : (
+                  <Card>
+                    <CardContent sx={{ p: 0 }}>
+                      {responses.length === 0 ? (
+                        <Box sx={{ py: 8, textAlign: "center" }}>
+                          <Typography sx={{ color: "grey.500", mb: 2 }}>
+                            ยังไม่มีการตอบกลับสำหรับแบบฟอร์มนี้
+                          </Typography>
+                          <Typography
+                            sx={{ color: "grey.400", fontSize: "0.875rem" }}
+                          >
+                            คำตอบจะปรากฏที่นี่เมื่อมีคนส่งแบบฟอร์ม
+                          </Typography>
+                        </Box>
+                      ) : (
+                        <TableContainer>
+                          <Table>
+                            <TableHead>
+                              <TableRow>
                                 <TableCell
-                                  key={question.id}
-                                  sx={{
-                                    maxWidth: 200,
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    fontWeight: "bold",
-                                  }}
+                                  sx={{ width: 180, fontWeight: "bold" }}
                                 >
-                                  {question.title}
+                                  ระยะเวลาการส่ง
                                 </TableCell>
-                              ))}
-                              <TableCell
-                                align="right"
-                                sx={{ fontWeight: "bold" }}
-                              >
-                                ตัวเลือก
-                              </TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {responses.map((response) => (
-                              <TableRow key={response.id}>
-                                <TableCell>
-                                  {formatDate(response.createdAt)}
-                                </TableCell>
-                                {form.questions.slice(0, 3).map((question) => {
-                                  const answer = response.answers.find(
-                                    (a) => a.questionId === question.id
-                                  );
-                                  let displayValue = "-";
-                                  if (answer) {
-                                    displayValue = Array.isArray(answer.value)
-                                      ? answer.value.join(", ")
-                                      : answer.value;
-                                  }
-                                  return (
-                                    <TableCell
-                                      key={question.id}
-                                      sx={{
-                                        maxWidth: 200,
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                      }}
-                                    >
-                                      {displayValue || "-"}
-                                    </TableCell>
-                                  );
-                                })}
-                                <TableCell align="right">
-                                  <Button
-                                    variant="text"
-                                    size="small"
-                                    onClick={() => setViewingResponse(response)}
-                                    startIcon={<EyeIcon />}
-                                    sx={{ color: "#000957" }}
+                                {form.questions.slice(0, 3).map((question) => (
+                                  <TableCell
+                                    key={question.id}
+                                    sx={{
+                                      maxWidth: 200,
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      fontWeight: "bold",
+                                    }}
                                   >
-                                    ดูรายละเอียด
-                                  </Button>
+                                    {question.title}
+                                  </TableCell>
+                                ))}
+                                <TableCell
+                                  align="right"
+                                  sx={{ fontWeight: "bold" }}
+                                >
+                                  ตัวเลือก
                                 </TableCell>
                               </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
+                            </TableHead>
+                            <TableBody>
+                              {responses.map((response) => (
+                                <TableRow key={response.id}>
+                                  <TableCell>
+                                    {formatDate(response.createdAt)}
+                                  </TableCell>
+                                  {form.questions
+                                    .slice(0, 3)
+                                    .map((question) => {
+                                      const answer = response.answers.find(
+                                        (a) => a.questionId === question.id
+                                      );
+                                      let displayValue = "-";
+                                      if (answer) {
+                                        displayValue = Array.isArray(
+                                          answer.value
+                                        )
+                                          ? answer.value.join(", ")
+                                          : answer.value;
+                                      }
+                                      return (
+                                        <TableCell
+                                          key={question.id}
+                                          sx={{
+                                            maxWidth: 200,
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                          }}
+                                        >
+                                          {displayValue || "-"}
+                                        </TableCell>
+                                      );
+                                    })}
+                                  <TableCell align="right">
+                                    <Button
+                                      variant="text"
+                                      size="small"
+                                      onClick={() =>
+                                        setViewingResponse(response)
+                                      }
+                                      startIcon={<EyeIcon />}
+                                      sx={{ color: "#000957" }}
+                                    >
+                                      ดูรายละเอียด
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+              </Grid>
             </Grid>
-          </Grid>
-        </Container>
+          </Container>
+        </Box>
       </Box>
-    </Box>
+    </AppLayout>
   );
 };
 

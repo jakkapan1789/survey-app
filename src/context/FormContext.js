@@ -6,22 +6,24 @@ export const FormProvider = ({ children }) => {
   const [forms, setForms] = useState([]);
   const [responses, setResponses] = useState([]);
 
-  useEffect(() => {
-    const storedForms = JSON.parse(localStorage.getItem("forms")) || [];
-    const storedResponses = JSON.parse(localStorage.getItem("responses")) || [];
-    setForms(storedForms);
-    setResponses(storedResponses);
+  const fetchInitialData = async () => {
+    try {
+      const formsResponse = await fetch("/api/forms");
+      const formsData = await formsResponse.json();
+      setForms(formsData);
+
+      const responsesResponse = await fetch("/api/responses");
+      const responsesData = await responsesResponse.json();
+      setResponses(responsesData);
+    } catch (error) {
+      console.error("Failed to fetch initial data:", error);
+    }
+  };
+  useEffect(async () => {
+    await fetchInitialData();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("forms", JSON.stringify(forms));
-  }, [forms]);
-
-  useEffect(() => {
-    localStorage.setItem("responses", JSON.stringify(responses));
-  }, [responses]);
-
-  const createForm = () => {
+  const createForm = async () => {
     const newForm = {
       id: `form-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       title: "แบบสอบถามใหม่",
@@ -32,6 +34,7 @@ export const FormProvider = ({ children }) => {
           type: "text",
           title: "คำถามใหม่",
           required: false,
+          order: 0,
         },
       ],
       createdAt: Date.now(),
@@ -39,47 +42,207 @@ export const FormProvider = ({ children }) => {
       published: false,
     };
 
-    setForms((prevForms) => [...prevForms, newForm]);
-    return newForm.id;
+    try {
+      console.log("Creating form:", newForm);
+      const response = await fetch("/api/forms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newForm),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create form");
+      }
+
+      const createdForm = await response.json();
+      setForms((prevForms) => [...prevForms, createdForm]);
+      return createdForm.id;
+    } catch (error) {
+      console.error("Error creating form:", error);
+      return null;
+    }
   };
 
-  const updateForm = (form) => {
-    setForms((prevForms) =>
-      prevForms.map((f) => (f.id === form.id ? form : f))
-    );
+  const updateForm = async (form) => {
+    try {
+      console.log("Updating form:", form);
+      const response = await fetch(`/api/forms/${form.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update form");
+      }
+
+      const updatedForm = await response.json();
+      setForms((prevForms) =>
+        prevForms.map((f) => (f.id === updatedForm.id ? updatedForm : f))
+      );
+    } catch (error) {
+      console.error("Error updating form:", error);
+    }
   };
 
-  const deleteForm = (formId) => {
-    setForms((prevForms) => prevForms.filter((f) => f.id !== formId));
+  const deleteForm = async (formId) => {
+    try {
+      console.log("Deleting form:", formId);
+      const response = await fetch(`/api/forms/${formId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to delete form");
+      }
+
+      setForms((prevForms) => prevForms.filter((f) => f.id !== formId));
+    } catch (error) {
+      console.error("Error deleting form:", error);
+    }
   };
 
-  const getForm = (formId) => {
-    return forms.find((f) => f.id === formId);
+  const getForm = async (formId) => {
+    try {
+      console.log("Fetching form from DB:", formId);
+      const response = await fetch(`/api/forms/${formId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Form not found");
+      }
+
+      const formData = await response.json();
+      setForms((prevForms) => {
+        const exists = prevForms.some((f) => f.id === formId);
+        if (exists) {
+          return prevForms.map((f) => (f.id === formId ? formData : f));
+        }
+        return [...prevForms, formData];
+      });
+      return formData;
+    } catch (error) {
+      console.error("Error fetching form:", error);
+      return null;
+    }
   };
 
-  const publishForm = (formId) => {
-    setForms((prevForms) =>
-      prevForms.map((f) => (f.id === formId ? { ...f, published: true } : f))
-    );
+  const publishForm = async (formId) => {
+    try {
+      console.log("Publishing form:", formId);
+      const response = await fetch(`/api/forms/${formId}/publish`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ published: true }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to publish form");
+      }
+
+      const updatedForm = await response.json();
+      setForms((prevForms) =>
+        prevForms.map((f) => (f.id === formId ? updatedForm : f))
+      );
+    } catch (error) {
+      console.error("Error publishing form:", error);
+    } finally {
+      await fetchInitialData();
+    }
   };
 
-  const unpublishForm = (formId) => {
-    setForms((prevForms) =>
-      prevForms.map((f) => (f.id === formId ? { ...f, published: false } : f))
-    );
+  const unpublishForm = async (formId) => {
+    try {
+      console.log("Unpublishing form:", formId);
+      const response = await fetch(`/api/forms/${formId}/publish`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ published: false }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to unpublish form");
+      }
+
+      const updatedForm = await response.json();
+      setForms((prevForms) =>
+        prevForms.map((f) => (f.id === formId ? updatedForm : f))
+      );
+    } catch (error) {
+      console.error("Error unpublishing form:", error);
+    } finally {
+      await fetchInitialData();
+    }
   };
 
-  const submitResponse = (formResponse) => {
+  const submitResponse = async (formResponse) => {
     const newResponse = {
       id: `response-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       createdAt: Date.now(),
       ...formResponse,
     };
-    setResponses((prevResponses) => [...prevResponses, newResponse]);
+
+    try {
+      console.log("Submitting response:", newResponse);
+      const response = await fetch("/api/responses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newResponse),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to submit response");
+      }
+
+      const createdResponse = await response.json();
+      setResponses((prevResponses) => [...prevResponses, createdResponse]);
+    } catch (error) {
+      console.error("Error submitting response:", error);
+    }
   };
 
-  const getFormResponses = (formId) => {
-    return responses.filter((r) => r.formId === formId);
+  const getFormResponses = async (formId) => {
+    try {
+      console.log("Fetching responses from DB for form:", formId);
+      const response = await fetch(`/api/responses?formId=${formId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch responses");
+      }
+
+      const responsesData = await response.json();
+      setResponses((prevResponses) => {
+        const updatedResponses = [...prevResponses];
+        responsesData.forEach((newResponse) => {
+          const index = updatedResponses.findIndex(
+            (r) => r.id === newResponse.id
+          );
+          if (index >= 0) {
+            updatedResponses[index] = newResponse;
+          } else {
+            updatedResponses.push(newResponse);
+          }
+        });
+        return updatedResponses;
+      });
+      return responsesData;
+    } catch (error) {
+      console.error("Error fetching responses:", error);
+      return [];
+    }
   };
 
   return (

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Navbar from "@/components/Navbar";
 import QuestionEditor from "@/components/QuestionEditor";
 import FormPreview from "@/components/FormPreview";
 import { useFormContext } from "@/context/FormContext";
@@ -26,6 +25,7 @@ import {
 } from "@mui/icons-material";
 import EditIcon from "@mui/icons-material/Edit";
 import Title from "@/components/Title";
+import AppLayout from "@/components/Layout";
 
 const FormBuilder = () => {
   const searchParams = useSearchParams();
@@ -38,17 +38,34 @@ const FormBuilder = () => {
   const [previewAnswers, setPreviewAnswers] = useState({});
 
   useEffect(() => {
-    if (formId) {
-      const existingForm = getForm(formId);
+    const fetchForm = async () => {
+      if (!formId) return;
+
+      const existingForm = await getForm(formId);
       if (existingForm) {
         setForm(existingForm);
+        console.log("existingForm", existingForm);
+        console.log("form", form);
       } else {
         router.push("/dashboard");
       }
-    } else {
-      router.push("/dashboard");
-    }
-  }, [formId, getForm, router]);
+    };
+
+    fetchForm();
+  }, [formId, router]);
+
+  //   useEffect(() => {
+  //     if (formId) {
+  //       const existingForm = getForm(formId);
+  //       if (existingForm) {
+  //         setForm(existingForm);
+  //       } else {
+  //         router.push("/dashboard");
+  //       }
+  //     } else {
+  //       router.push("/dashboard");
+  //     }
+  //   }, [formId, router]);
 
   if (!form) {
     return (
@@ -66,8 +83,6 @@ const FormBuilder = () => {
 
   const handlePublish = () => {
     form.published ? unpublishForm(form.id) : publishForm(form.id);
-
-    // router.push(`/view?formId${form.id}`);
   };
 
   const handleAddQuestion = () => {
@@ -115,15 +130,15 @@ const FormBuilder = () => {
   };
 
   return (
-    <>
+    <AppLayout>
       <Title title={`Designed form`} />
-      <Navbar />
       <Box
         sx={{
           mt: 8,
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
+          mb: 2,
         }}
         data-aos="fade-up"
         data-aos-duration="700"
@@ -138,6 +153,37 @@ const FormBuilder = () => {
                   pt: 3,
                 }}
               >
+                <Stack
+                  direction={"row"}
+                  display={"flex"}
+                  justifyContent={"end"}
+                  sx={{
+                    mb: 1,
+                    display: { xs: "flex", md: "none", sm: "none" },
+                  }}
+                >
+                  <Box sx={{ ml: "auto", display: "flex", gap: 1 }}>
+                    <Button
+                      variant="outlined"
+                      onClick={handleSave}
+                      startIcon={<Save />}
+                      sx={{ color: "#003092", borderColor: "#003092" }}
+                    >
+                      บันทึก
+                    </Button>
+
+                    <Button
+                      variant="contained"
+                      onClick={handlePublish}
+                      startIcon={<LinkIcon />}
+                      sx={{
+                        bgcolor: form.published ? "#D84040" : " #003092",
+                      }}
+                    >
+                      {form.published ? "ยกเลิกเผยแพร่" : " เผยแพร่"}
+                    </Button>
+                  </Box>
+                </Stack>
                 <Box component={Card} sx={{ p: 2, borderRadius: 2 }}>
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <IconButton
@@ -166,7 +212,16 @@ const FormBuilder = () => {
                       }}
                     />
 
-                    <Box sx={{ ml: "auto", display: "flex", gap: 1 }}>
+                    <Box
+                      component={Stack}
+                      spacing={1}
+                      direction={"row"}
+                      sx={{
+                        ml: "auto",
+                        display: { xs: "none", md: "flex", sm: "flex" },
+                        gap: 1,
+                      }}
+                    >
                       <Button
                         variant="outlined"
                         onClick={handleSave}
@@ -259,17 +314,45 @@ const FormBuilder = () => {
                         width: "100%",
                       }}
                     >
-                      {form.questions.map((question) => (
-                        <QuestionEditor
-                          key={question.id}
-                          question={question}
-                          form={form}
-                          onUpdate={(updatedQuestion) =>
-                            handleUpdateQuestion(question.id, updatedQuestion)
-                          }
-                          onDelete={() => handleDeleteQuestion(question.id)}
-                        />
-                      ))}
+                      {form &&
+                        form.questions.forEach((question) => (
+                          <QuestionEditor
+                            key={question.id}
+                            question={question}
+                            form={form}
+                            onUpdate={(updatedQuestion) =>
+                              handleUpdateQuestion(question.id, updatedQuestion)
+                            }
+                            onDelete={() => handleDeleteQuestion(question.id)}
+                          />
+                        ))}
+                      {form &&
+                        form.questions.map((question) => (
+                          <QuestionEditor
+                            key={question.id}
+                            question={question}
+                            form={form}
+                            onUpdate={(updatedQuestion) =>
+                              handleUpdateQuestion(question.id, updatedQuestion)
+                            }
+                            onDelete={() => handleDeleteQuestion(question.id)}
+                          />
+                        ))}
+                      {/* {form && form.questions && form.questions.length > 0 ? (
+                        form.questions.map((question) => (
+                          <QuestionEditor
+                            key={question.id}
+                            question={question}
+                            form={form}
+                            onUpdate={(updatedQuestion) =>
+                              handleUpdateQuestion(question.id, updatedQuestion)
+                            }
+                            onDelete={() => handleDeleteQuestion(question.id)}
+                          />
+                        ))
+                      ) : (
+                        <p>No questions available</p>
+                      )} */}
 
                       <Button
                         variant="outlined"
@@ -308,7 +391,7 @@ const FormBuilder = () => {
           </Grid>
         </Container>
       </Box>
-    </>
+    </AppLayout>
   );
 };
 

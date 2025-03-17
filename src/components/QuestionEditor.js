@@ -78,10 +78,10 @@ const QuestionEditor = ({ question, form, onUpdate, onDelete, isDragging }) => {
     });
   };
 
-  const handleUpdateConditionalLogic = (conditionalLogic) => {
+  const handleUpdateconditional_logic = (conditional_logic) => {
     onUpdate({
       ...question,
-      conditionalLogic,
+      conditional_logic,
     });
   };
 
@@ -95,8 +95,10 @@ const QuestionEditor = ({ question, form, onUpdate, onDelete, isDragging }) => {
   };
 
   const eligibleQuestions = getEligibleConditionQuestions();
-  const selectedQuestion = question.conditionalLogic
-    ? form.questions.find((q) => q.id === question.conditionalLogic?.questionId)
+  const selectedQuestion = question.conditional_logic
+    ? form.questions.find(
+        (q) => q.id === question.conditional_logic?.questionId
+      )
     : undefined;
 
   return (
@@ -225,7 +227,7 @@ const QuestionEditor = ({ question, form, onUpdate, onDelete, isDragging }) => {
                   control={
                     <Switch
                       size="small"
-                      checked={!!question.conditionalLogic}
+                      checked={!!question.conditional_logic}
                       onChange={(e) => {
                         if (e.target.checked && eligibleQuestions.length > 0) {
                           const firstQuestion = eligibleQuestions[0];
@@ -235,9 +237,9 @@ const QuestionEditor = ({ question, form, onUpdate, onDelete, isDragging }) => {
                             operator: "equals",
                             value: firstOption?.text || "",
                           };
-                          handleUpdateConditionalLogic(newLogic);
+                          handleUpdateconditional_logic(newLogic);
                         } else {
-                          handleUpdateConditionalLogic(undefined);
+                          handleUpdateconditional_logic(undefined);
                         }
                       }}
                     />
@@ -245,7 +247,7 @@ const QuestionEditor = ({ question, form, onUpdate, onDelete, isDragging }) => {
                   label="แสดงคำถามนี้เฉพาะเมื่อ:"
                 />
 
-                {question.conditionalLogic && (
+                {question.conditional_logic && (
                   <Box
                     sx={{
                       display: "grid",
@@ -257,14 +259,14 @@ const QuestionEditor = ({ question, form, onUpdate, onDelete, isDragging }) => {
                     <FormControl>
                       <Select
                         size="small"
-                        value={question.conditionalLogic.questionId}
+                        value={question.conditional_logic.questionId}
                         onChange={(e) => {
                           const targetQuestion = form.questions.find(
                             (q) => q.id === e.target.value
                           );
                           const firstOption = targetQuestion?.options?.[0];
-                          handleUpdateConditionalLogic({
-                            ...question.conditionalLogic,
+                          handleUpdateconditional_logic({
+                            ...question.conditional_logic,
                             questionId: e.target.value,
                             value: firstOption?.text || "",
                           });
@@ -281,10 +283,10 @@ const QuestionEditor = ({ question, form, onUpdate, onDelete, isDragging }) => {
                     <FormControl>
                       <Select
                         size="small"
-                        value={question.conditionalLogic.operator}
+                        value={question.conditional_logic.operator}
                         onChange={(e) => {
-                          handleUpdateConditionalLogic({
-                            ...question.conditionalLogic,
+                          handleUpdateconditional_logic({
+                            ...question.conditional_logic,
                             operator: e.target.value,
                           });
                         }}
@@ -297,10 +299,10 @@ const QuestionEditor = ({ question, form, onUpdate, onDelete, isDragging }) => {
                     <FormControl>
                       <Select
                         size="small"
-                        value={question.conditionalLogic.value}
+                        value={question.conditional_logic.value}
                         onChange={(e) => {
-                          handleUpdateConditionalLogic({
-                            ...question.conditionalLogic,
+                          handleUpdateconditional_logic({
+                            ...question.conditional_logic,
                             value: e.target.value,
                           });
                         }}
