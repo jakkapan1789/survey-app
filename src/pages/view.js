@@ -382,6 +382,63 @@ const FormView = () => {
     );
   }
 
+  if (submitted) {
+    return (
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          bgcolor: "grey.50",
+        }}
+      >
+        <Card
+          sx={{
+            p: 4,
+            maxWidth: 400,
+            width: "100%",
+            textAlign: "center",
+            mr: 2,
+            ml: 2,
+          }}
+        >
+          <Box
+            sx={{
+              width: 64,
+              height: 64,
+              bgcolor: "green.100",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mx: "auto",
+              mb: 2,
+            }}
+          >
+            <CheckCircleOutlineIcon
+              sx={{ width: 70, height: 70, color: "green" }}
+            />
+          </Box>
+          <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
+            ขอขอบคุณสำหรับการตอบกลับของคุณ
+          </Typography>
+          <Typography sx={{ color: "grey.600", mb: 3 }}>
+            บันทึกการตอบกลับของคุณเรียบร้อยแล้ว
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={() => router.refresh()}
+            fullWidth
+            sx={{ bgcolor: "#003092" }}
+          >
+            กลับสู่หน้าแรก
+          </Button>
+        </Card>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "grey.50", py: 4, px: 2 }}>
       <Container maxWidth="lg">
