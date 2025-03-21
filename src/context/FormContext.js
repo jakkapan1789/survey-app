@@ -37,8 +37,8 @@ export const FormProvider = ({ children }) => {
           order: 0,
         },
       ],
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      created_at: Date.now(),
+      updated_at: Date.now(),
       published: false,
     };
 
@@ -186,7 +186,7 @@ export const FormProvider = ({ children }) => {
   const submitResponse = async (formResponse) => {
     const newResponse = {
       id: `response-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-      createdAt: Date.now(),
+      created_at: Date.now(),
       ...formResponse,
     };
 

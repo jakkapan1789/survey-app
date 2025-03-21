@@ -22,7 +22,8 @@ export default async function handler(req, res) {
         const result = await pool.query(
           `
             SELECT 
-    f.*, 
+            f.*
+            , 
     json_agg(
         json_build_object(
             'id', q.id,

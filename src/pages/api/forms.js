@@ -18,7 +18,8 @@ export default async function handler(req, res) {
     case "GET":
       try {
         const result = await pool.query(`
-            SELECT f.*, 
+            SELECT f.*
+            , 
                    json_agg(json_build_object(
                      'id', q.id,
                      'type', q.type,
@@ -51,8 +52,8 @@ export default async function handler(req, res) {
           title,
           description,
           questions,
-          createdAt,
-          updatedAt,
+          created_at,
+          updated_at,
           published,
         } = req.body;
 
@@ -62,17 +63,9 @@ export default async function handler(req, res) {
             .json({ error: "Missing or invalid required fields" });
         }
 
-        const createdAtSeconds = Math.floor(Number(createdAt) / 1000);
-        const updatedAtSeconds = Math.floor(Number(updatedAt) / 1000);
+        const createdAtSeconds = Math.floor(Number(created_at) / 1000);
+        const updatedAtSeconds = Math.floor(Number(updated_at) / 1000);
 
-        console.log("Inserting form:", {
-          id,
-          title,
-          description,
-          published,
-          createdAt: createdAtSeconds,
-          updatedAt: updatedAtSeconds,
-        });
         await pool.query(
           "INSERT INTO forms (id, title, description, published, created_at, updated_at) VALUES ($1, $2, $3, $4, to_timestamp($5), to_timestamp($6))",
           [

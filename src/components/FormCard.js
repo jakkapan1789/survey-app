@@ -35,7 +35,7 @@ const FormCard = ({ form }) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const router = useRouter();
-
+  console.log("form", form);
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -87,7 +87,7 @@ const FormCard = ({ form }) => {
             }}
           >
             <Typography sx={{ fontSize: "0.75rem", color: "grey.500" }}>
-              แก้ไขล่าสุด: {formatDate(form.updatedAt)}
+              แก้ไขล่าสุด: {formatDate(form.updated_at)}
             </Typography>
             <Typography
               component="span"

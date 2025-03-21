@@ -20,6 +20,7 @@ const Dashboard = () => {
 
   const handleCreateForm = async () => {
     const formId = await createForm();
+    console.log("create form id ", formId);
     router.push(`/formbuilder?formId=${formId}`);
   };
 
